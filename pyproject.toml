@@ -1,0 +1,24 @@
+[project]
+name = "trademe_sdk"
+version = "0.1.0"
+description = "Tiny PoC client for the Trade Me API (OAuth 1.0a)"
+readme = "README.md"
+requires-python = ">=3.9"
+dependencies = [
+  "requests>=2.32",
+  "requests-oauthlib>=2.0",
+  "python-dotenv>=1.0",
+]
+
+[project.scripts]
+trademe = "trademe_sdk.__main__:main"
+
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
