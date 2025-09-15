@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is `trademe-sdk`, a Python SDK for the Trade Me API using OAuth 1.0a authentication. It's currently a proof-of-concept implementation with basic functionality for listing details and watchlist operations.
+This is `trademe-sdk`, a Python SDK for the Trade Me API using OAuth 1.0a authentication. It's a proof-of-concept implementation with a clean, layered architecture supporting multiple authentication methods and environments. The SDK provides a simple interface for Trade Me API operations with robust authentication handling.
 
 ## Development Commands
 
@@ -21,7 +21,7 @@ pip install -e .
 python src/examples/demo.py               # Main demo (sandbox environment)
 python src/examples/login_demo.py         # OAuth login demo (PIN-based OOB flow)
 
-# Use command-line login utility
+# Use command-line authentication utility
 python -m trademe_sdk
 ```
 
@@ -68,12 +68,23 @@ The SDK supports multiple Trade Me environments via the `environment` parameter:
 
 All URLs (API base, OAuth endpoints) are automatically configured based on environment selection.
 
-## API Client Structure
+## Current Implementation
+
+### Core Modules:
+- **`client.py`** - `TMClient` class with environment-aware initialization and OAuth 1.0a request signing
+- **`auth_flow.py`** - Low-level OAuth 1.0a implementation with dual callback support (local server + PIN-based)
+- **`auth_helpers.py`** - High-level `ensure_auth()` function for credential resolution
+- **`config.py`** - Environment configuration management (sandbox/production)
+- **`errors.py`** - Custom exception classes
+- **`__main__.py`** - Command-line interface for authentication
+
+### API Client Structure
 
 The `TMClient` class provides:
 - **Environment-aware initialization** - defaults to sandbox, can specify production
 - Session-based HTTP handling with OAuth 1.0a signing
 - JSON response parsing with error handling
+- Configurable timeout (default 20s)
 - Currently implements 2 endpoints as proof-of-concept:
   - `get_listing(listing_id)` - Retrieve listing details
   - `get_watchlist(filter, page, rows, category)` - Retrieve user's watchlist
