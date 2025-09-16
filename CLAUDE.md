@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is `trademe-sdk`, a Python SDK for the Trade Me API using OAuth 1.0a authentication. It's a proof-of-concept implementation with a clean, layered architecture supporting multiple authentication methods and environments. The SDK provides a simple interface for Trade Me API operations with robust authentication handling.
+This is `trademe-sdk`, a Python SDK for the Trade Me API using OAuth 1.0a authentication. It's a proof-of-concept implementation with clean, layered architecture supporting multiple authentication methods and environments.
 
 ## Development Commands
 
@@ -27,13 +27,13 @@ python -m trademe_sdk
 
 ## API Documentation
 
-To fetch the consolidated OpenAPI specification for development context:
+Use the included script to fetch consolidated OpenAPI specification for development context:
 
 ```bash
 ./src/scripts/get-consolidated-doc.sh
 ```
 
-This copies `../trademe-api-doc/openapi/openapi-consolidated.yaml` to `./context/` for reference when implementing new endpoints.
+This copies documentation from `../trademe-api-doc/` to `./context/` for reference.
 
 ## Authentication Architecture
 
@@ -45,64 +45,35 @@ The SDK implements a layered authentication system with multiple credential sour
 3. **Interactive OAuth flow** (if `auto_login=True` and running in terminal)
 
 ### Key Components:
-- `ensure_auth()` - High-level credential resolution function used by demo.py
-- `auth_flow.py` - Low-level OAuth 1.0a implementation with dual callback support:
-  - **Local callback server** (`prefer_local_callback=True`) - Opens browser, captures redirect automatically
-  - **PIN-based OOB flow** (`prefer_local_callback=False`) - User manually enters PIN from browser
+- `ensure_auth()` - High-level credential resolution function
+- `auth_flow.py` - OAuth 1.0a implementation with dual callback support (local server + PIN-based)
 - `auth_helpers.py` - Convenience wrapper around auth flow
 - `client.py` - HTTP client with OAuth 1.0a request signing
 
-### OAuth Implementation Details:
-- Uses **PLAINTEXT signature method** throughout (simpler than HMAC-SHA1)
-- **Environment-based configuration** - no need to specify URLs manually
-- Scope parameter sent as POST data to request token endpoint (not query string)
-- Local callback server runs on `127.0.0.1:8765` with proper cleanup
-- Credentials automatically saved to secure file with 0o600 permissions
-
-## Environment Configuration
-
-The SDK supports multiple Trade Me environments via the `environment` parameter:
-
-- **"sandbox"** (default) - Trade Me sandbox for testing
-- **"production"** - Live Trade Me environment
-
-All URLs (API base, OAuth endpoints) are automatically configured based on environment selection.
+### Implementation Details:
+- Uses PLAINTEXT signature method (simpler than HMAC-SHA1)
+- Environment-based configuration (sandbox/production)
+- Credentials automatically saved with secure permissions (0o600)
 
 ## Current Implementation
 
 ### Core Modules:
-- **`client.py`** - `TMClient` class with environment-aware initialization and OAuth 1.0a request signing
-- **`auth_flow.py`** - Low-level OAuth 1.0a implementation with dual callback support (local server + PIN-based)
-- **`auth_helpers.py`** - High-level `ensure_auth()` function for credential resolution
-- **`config.py`** - Environment configuration management (sandbox/production)
-- **`errors.py`** - Custom exception classes
-- **`__main__.py`** - Command-line interface for authentication
+- `client.py` - TMClient class with OAuth 1.0a request signing
+- `auth_flow.py` - OAuth 1.0a implementation with dual callback support
+- `auth_helpers.py` - High-level ensure_auth() function
+- `config.py` - Environment configuration (sandbox/production)
+- `errors.py` - Custom exception classes
 
-### API Client Structure
-
-The `TMClient` class provides:
-- **Environment-aware initialization** - defaults to sandbox, can specify production
-- Session-based HTTP handling with OAuth 1.0a signing
+### API Client
+- Environment-aware initialization (defaults to sandbox)
+- Session-based HTTP handling with OAuth signing
 - JSON response parsing with error handling
-- Configurable timeout (default 20s)
-- Currently implements 2 endpoints as proof-of-concept:
+- Currently implements 2 proof-of-concept endpoints:
   - `get_listing(listing_id)` - Retrieve listing details
   - `get_watchlist(filter, page, rows, category)` - Retrieve user's watchlist
 
-### Usage Examples:
-
+### Usage:
 ```python
-# Sandbox (default)
-client = TMClient(auth)
-
-# Production
-client = TMClient(auth, environment="production")
-
-# Environment can also be specified during auth
-auth = ensure_auth(auto_login=True, environment="production")
+auth = ensure_auth(auto_login=True, environment="sandbox")
+client = TMClient(auth, environment="production")  # override environment
 ```
-
-## Error Handling
-
-- `AuthenticationRequired` exception raised when no valid credentials found
-- HTTP errors bubble up from requests library with `raise_for_status()`

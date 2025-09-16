@@ -1,6 +1,6 @@
 # Trade Me SDK
 
-A Python SDK for the Trade Me API using OAuth 1.0a authentication. This proof-of-concept implementation provides a clean interface for Trade Me API operations with robust authentication handling and support for both sandbox and production environments.
+A Python SDK for the Trade Me API. This proof-of-concept implementation provides a clean interface for Trade Me API operations with authentication support using OAuth 1.0a and handles for both sandbox and production environments.
 
 ## Installation
 
@@ -78,7 +78,8 @@ print(f"Total items: {watchlist.get('TotalCount')}")
 
 ## Examples
 
-See `src/examples/` for complete usage examples:
+See `src/examples/` for usage examples:
+
 - **`demo.py`** - Basic SDK usage with authentication and API calls
 - **`login_demo.py`** - OAuth authentication flow demonstration
 
@@ -97,16 +98,17 @@ client = TMClient(auth, environment="production")
 
 ## Extending the SDK
 
-When developing or extending this proof-of-concept SDK, it can be helpful to provide clean documentation on Trade Me's API structure to LLM agents for context. Comprehensive API documentation is available at:
+When developing or extending this proof-of-concept SDK, it can be helpful to provide clean documentation on Trade Me's API structure to LLM agents for context. Sample API documentation is available at:
 
 **https://github.com/nzduck/trademe-api-doc**
 
 This repository contains:
-- Complete OpenAPI specifications for Trade Me's API
-- Consolidated documentation in machine-readable formats
+
+- A sample OpenAPI specification for Trade Me's API (incomplete)
+- Consolidated (single-file) documentation in machine-readable formats (yaml)
 - Detailed endpoint descriptions and schemas
 
-For convenience, use the included script to fetch consolidated documentation:
+For convenience, use the included script to fetch consolidated documentation from a local project co-located in the same parent folder:
 
 ```bash
 # Fetch API documentation for development context
@@ -120,16 +122,16 @@ This copies the consolidated OpenAPI specification to `./context/` for easy refe
 ```
 src/
 ├── trademe_sdk/
-│   ├── __init__.py          # Main exports
-│   ├── __main__.py          # Command-line interface
-│   ├── client.py            # TMClient and TMAuth classes
-│   ├── auth_flow.py         # OAuth 1.0a implementation
-│   ├── auth_helpers.py      # High-level auth functions
-│   ├── config.py            # Environment configuration
-│   └── errors.py            # Custom exceptions
+│   ├── __init__.py              # Main exports
+│   ├── __main__.py              # Command-line interface
+│   ├── client.py                # TMClient and TMAuth classes
+│   ├── auth_flow.py             # OAuth 1.0a implementation
+│   ├── auth_helpers.py          # High-level auth functions
+│   ├── config.py                # Environment configuration
+│   └── errors.py                # Custom exceptions
 ├── examples/
-│   ├── demo.py              # Basic usage example
-│   └── login_demo.py        # OAuth flow example
+│   ├── demo.py                  # Basic usage example
+│   └── login_demo.py            # OAuth flow example
 └── scripts/
     └── get-consolidated-doc.sh  # API documentation fetcher
 ```
